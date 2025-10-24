@@ -24,14 +24,41 @@
     </div>
 
     <script>
-      document.getElementById("form").addEventListener("submit", (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
+      const fetchShortenedURL = async () => {
+        let response = await fetch("/links");
+        let links = response.json();
+        console.log(links);
+      };
 
-        const url = formData.get("url");
-        const shortCode = formData.get("urlshortner");
-        console.log(url, shortCode);
-      });
+      document
+        .getElementById("form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+
+          const url = formData.get("url");
+          const shortCode = formData.get("urlshortner");
+          console.log(url, shortCode);
+
+          try {
+            let response = await fetch("/shorten", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url, shortCode }),
+            });
+            if (response.ok) {
+              alert("form submitted successfully");
+              event.target.reset();
+            } else {
+              const errorMessage = await response.text();
+              alert(errorMessage);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        });
+
+      fetchShortenedURL();
     </script>
   </body>
 </html>
