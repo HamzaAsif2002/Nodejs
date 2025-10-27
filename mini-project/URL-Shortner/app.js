@@ -47,8 +47,14 @@ const server = createServer( async (req, res) => {
          return res.end(JSON.stringify(links)); 
         
       default:
-        res.writeHead(404, { "Content-Type": "text/plain" });
-        res.end("404 - Page Not Found");
+        const linkss = await loadLinks();
+        const shortCode = req.url.slice(1);
+        if(linkss[shortCode]){
+        res.writeHead(302, {location: linkss[shortCode]});
+        return res.end();
+        }
+         res.writeHead(404, {"Content-Type": "text/plain"});
+        return res.end("Shortened URL is not found");
     }
   }
   

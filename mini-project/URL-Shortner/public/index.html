@@ -21,13 +21,24 @@
       </form>
 
       <h1>Shortened URLs</h1>
+      <ul id="shortened-urls"></ul>
     </div>
 
     <script>
       const fetchShortenedURL = async () => {
         let response = await fetch("/links");
-        let links = response.json();
-        console.log(links);
+        let links = await response.json();
+        console.log("links", links);
+
+        const list = document.getElementById("shortened-urls");
+        list.innerHTML = "";
+
+        for (const [shortCode, url] of Object.entries(links)) {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="/${shortCode}" target="_blank">
+            ${window.location.origin}/${shortCode}</a> - ${url}`;
+          list.append(li);
+        }
       };
 
       document
@@ -47,6 +58,7 @@
               body: JSON.stringify({ url, shortCode }),
             });
             if (response.ok) {
+              fetchShortenedURL();
               alert("form submitted successfully");
               event.target.reset();
             } else {
